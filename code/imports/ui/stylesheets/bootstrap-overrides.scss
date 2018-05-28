@@ -1,0 +1,15 @@
+@import './mixins';
+
+.page-header {
+  margin-top: 0;
+}
+
+.table > thead > tr > th {
+  width: 100%;
+}
+
+@include breakpoint(tablet) {
+  .page-header {
+    margin-top: 20px;
+  }
+}
