@@ -102,6 +102,7 @@ class InvoiceEditor extends React.Component {
     console.log(itemToUpdate);
     itemToUpdate[name] = name === 'amount' ? this[`amount_${_id}`].getMaskedValue() : value;
     this.setState({ taxItems });
+    console.log(this.state.taxItems);
   }
 
   calculateInvoiceTotal() {
@@ -112,14 +113,16 @@ class InvoiceEditor extends React.Component {
     return formatAsCurrency(total);
   }
 
-  calculateTaxAmt() {
+  calculateTaxAmt(_id) {
     const total = this.calculateInvoiceTotal();
-    let taxAmount = this.amountInput;
+    const taxItems = { ...this.state.taxItems };
+    console.log(taxItems);
+    let taxAmount = taxItems.amount;
     console.log('TAXAMOUNT');
     console.log(taxAmount);
     let totalTax = 0;
-    this.state.taxItems.map(({ amount }) => (
-      taxAmount = ((amount * this.getAmountAsFloat(total)) / 100),
+    this.state.taxItems.map(() => (
+      taxAmount = ((this[`amount_${_id}`] * this.getAmountAsFloat(total)) / 100),
       totalTax += taxAmount
     ));
     console.log('total');
@@ -148,11 +151,14 @@ class InvoiceEditor extends React.Component {
   changeTax(e) {
     console.log('###e');
     console.log(e.target.value);
-    this.state.taxItems.map(() => {
-      return (this.setState({
-        amount: e.target.value,
-      }));
-    });
+    console.log('ID');
+    console.log(this.state.taxItems[0]._id);
+    console.log(this.state.taxItems);
+    const taxItem = [...this.state.taxItems];
+    console.log('TAXITEM');
+    console.log(taxItem);
+    taxItem[0].amount = e.target.value;
+    this.setState({ taxItems: taxItem });
     console.log(this.state.taxItems);
   }
 
@@ -343,17 +349,24 @@ class InvoiceEditor extends React.Component {
                           className="form-control"
                           value={description}
                           placeholder="Write GraphQL schema"
-                          onChangeEvent={event => this.updateTaxItem(event, _id)}
+                          onChange={event => this.updateTaxItem(event, _id)}
                         />
                       </Col>
                       <Col xs={12} sm={2}>
                         <ControlLabel>Tax in %</ControlLabel>
+                        {/* <input
+                          type="text"
+                          name="amount"
+                          className="form-control text-center"
+                          value={this.state.taxItems.amount}
+                          onChange={event => this.changeTax(event)}
+                        /> */}
                         <input
                           type="text"
                           name="amount"
                           className="form-control text-center"
                           value={this.state.taxItems.amount}
-                          onChange={this.changeTax}
+                          onChange={event => this.updateTaxItem(event, _id)}
                         />
                       </Col>
                       <Col xs={12} sm={2}>
